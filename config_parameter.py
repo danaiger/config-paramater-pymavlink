@@ -9,6 +9,20 @@ class GPS_AUTO_SWITCH(Enum):
     BLEND=2
     USE_PRIMARY_IF_3D_FIX_OR_BETTER=4
 
+def wait_for_ack_that_parameter_has_been_configured_successfuly(parameter_name:str,expected_parameter_value:int,sock:mavfile,timeout_seconds:int):
+    now=time.time()
+    while True:
+        if time.time()>now+timeout_seconds:
+            raise TimeoutError("something went wrong, please try again")
+        message = sock.recv_match(type='PARAM_VALUE', blocking=True,timeout=timeout_seconds)
+        if not message:
+            raise TimeoutError("something went wrong, please try again")
+        parsed_message=message.to_dict()
+        if parsed_message.get('param_id') != parameter_name or parsed_message.get('param_value') != expected_parameter_value:
+            continue
+        break
+
+    print(f'parameter name: {parsed_message["param_id"]} was set successfuly with value: {parsed_message["param_value"]}')
 
 def set_a_parameter_at_on_board_computer(parameter_name:str,parameter_value:int,sock:mavfile,timeout_seconds:int):
     sock.mav.param_set_send(
@@ -18,20 +32,7 @@ def set_a_parameter_at_on_board_computer(parameter_name:str,parameter_value:int,
         mavutil.mavlink.MAV_PARAM_TYPE_REAL32
     )
     print(f"request sent to configure param name: {parameter_name} with value: {parameter_value}. waiting for acknowledgement")
-    now=time.time()
-    while True:
-        if time.time()>now+timeout_seconds:
-            raise TimeoutError("something went wrong, please try again")
-        message = sock.recv_match(type='PARAM_VALUE', blocking=True,timeout=timeout_seconds)
-        if not message:
-            raise TimeoutError("something went wrong, please try again")
-        parsed_message=message.to_dict()
-        print(parsed_message)
-        if parsed_message.get('param_id') != parameter_name or parsed_message.get('param_value') != parameter_value:
-            continue
-        break
-
-    print(f'parameter name: {parsed_message["param_id"]} was set successfuly with value: {parsed_message["param_value"]}')
+    wait_for_ack_that_parameter_has_been_configured_successfuly(parameter_name,parameter_value,sock,timeout_seconds)
 
 def main():
     TIMEOUT_SECOND=3
