@@ -7,19 +7,6 @@ PARAMETER_NAME="GPS_AUTO_SWITCH"
 connection:mavfile = mavutil.mavlink_connection('udpin:0.0.0.0:14550')
 connection.wait_heartbeat(timeout=TIMEOUT_SECOND)
 
-def read_a_parameter_from_on_board_computer(parameter_name:str,sock:mavfile,timeout:int=TIMEOUT_SECOND):
-    sock.mav.param_request_read_send(
-        sock.target_system, sock.target_component,
-        bytes(parameter_name,'utf-8'),
-        -1
-    )
-
-    message = sock.recv_match(type='PARAM_VALUE', blocking=True,timeout=timeout).to_dict()
-    print(f"a message received from obc: {message}")
-    print('name: %s\tvalue: %d' %
-          (message['param_id'], message['param_value']))
-
-
 def set_a_parameter_at_on_board_computer(parameter_name:str,sock:mavfile,timeout:int=TIMEOUT_SECOND):
     sock.mav.param_set_send(
         sock.target_system, sock.target_component,
