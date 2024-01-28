@@ -4,7 +4,7 @@ from pymavlink.mavutil import mavfile
 from enum import Enum
 
 
-class GPS_AUTO_SWITCH(Enum):
+class GPS_Auto_Switch(Enum):
     USE_PRIMARY = 0
     USE_BEST = 1
     BLEND = 2
@@ -86,7 +86,7 @@ def main():
     wait_for_heartbeat(connection, TIMEOUT_SECOND)
     set_a_parameter_at_on_board_computer(
         PARAMETER_NAME,
-        GPS_AUTO_SWITCH.USE_PRIMARY_IF_3D_FIX_OR_BETTER.value,
+        GPS_Auto_Switch.USE_PRIMARY_IF_3D_FIX_OR_BETTER.value,
         connection,
         TIMEOUT_SECOND,
     )
