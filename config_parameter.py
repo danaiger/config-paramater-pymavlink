@@ -11,7 +11,7 @@ class GPS_AUTO_SWITCH(Enum):
     USE_PRIMARY_IF_3D_FIX_OR_BETTER = 4
 
 
-def is_received_message_is_the_relevant_ack(
+def _is_received_message_is_the_relevant_ack(
     parsed_message: dict, parameter_name: str, expected_parameter_value: int
 ) -> bool:
     return (
@@ -20,7 +20,7 @@ def is_received_message_is_the_relevant_ack(
     )
 
 
-def get_next_message_of_type_parameter_value(sock, timeout_seconds):
+def _get_next_message_of_type_parameter_value(sock, timeout_seconds):
     message = sock.recv_match(
         type="PARAM_VALUE", blocking=True, timeout=timeout_seconds
     )
@@ -29,27 +29,23 @@ def get_next_message_of_type_parameter_value(sock, timeout_seconds):
     return message
 
 
-def wait_for_ack_that_parameter_has_been_configured_successfuly(
+def _wait_for_ack_that_parameter_has_been_configured_successfuly(
     parameter_name: str,
     expected_parameter_value: int,
     sock: mavfile,
     timeout_seconds: int,
-):
+)->dict:
     now = time.time()
     while True:
         if time.time() > now + timeout_seconds:
             raise TimeoutError("something went wrong, please try again")
-        message = get_next_message_of_type_parameter_value(sock, timeout_seconds)
+        message = _get_next_message_of_type_parameter_value(sock, timeout_seconds)
         parsed_message = message.to_dict()
-        if not is_received_message_is_the_relevant_ack(
+        if _is_received_message_is_the_relevant_ack(
             parsed_message, parameter_name, expected_parameter_value
         ):
-            continue
-        break
+            return parsed_message
 
-    print(
-        f'parameter name: {parsed_message["param_id"]} was set successfuly with value: {parsed_message["param_value"]}'
-    )
 
 
 def set_a_parameter_at_on_board_computer(
@@ -65,10 +61,13 @@ def set_a_parameter_at_on_board_computer(
     print(
         f"request sent to configure param name: {parameter_name} with value: {parameter_value}. waiting for acknowledgement"
     )
-    wait_for_ack_that_parameter_has_been_configured_successfuly(
+    ack_message=_wait_for_ack_that_parameter_has_been_configured_successfuly(
         parameter_name, parameter_value, sock, timeout_seconds
     )
 
+    print(
+        f'parameter name: {ack_message["param_id"]} was set successfuly with value: {ack_message["param_value"]}'
+    )
 
 def wait_for_heartbeat(sock: mavfile, timeout_seconds: int):
     heartbeat = sock.wait_heartbeat(timeout=timeout_seconds)
