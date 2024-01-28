@@ -26,10 +26,12 @@ def set_a_parameter_at_on_board_computer(parameter_name:str,parameter_value:int,
         if not message:
             raise TimeoutError("something went wrong, please try again")
         parsed_message=message.to_dict()
-        if parsed_message.get(parameter_name) != parameter_value:
+        print(parsed_message)
+        if parsed_message.get('param_id') != parameter_name or parsed_message.get('param_value') != parameter_value:
             continue
-        print('parameter name: %s\tvalue: %d' %
-              (parsed_message['param_id'], parsed_message['param_value']))
+        break
+
+    print(f'parameter name: {parsed_message["param_id"]} was set successfuly with value: {parsed_message["param_value"]}')
 
 def main():
     TIMEOUT_SECOND=3
@@ -38,7 +40,7 @@ def main():
     heartbeat=connection.wait_heartbeat(timeout=TIMEOUT_SECOND)
     if not heartbeat:
         raise TimeoutError("cannot get heartbeat, please check the connection")
-    set_a_parameter_at_on_board_computer(PARAMETER_NAME,GPS_AUTO_SWITCH.USE_BEST.value,connection,TIMEOUT_SECOND)
+    set_a_parameter_at_on_board_computer(PARAMETER_NAME,GPS_AUTO_SWITCH.USE_PRIMARY_IF_3D_FIX_OR_BETTER.value,connection,TIMEOUT_SECOND)
 
 if __name__=='__main__':
     main()
