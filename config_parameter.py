@@ -10,6 +10,10 @@ class GPS_AUTO_SWITCH(Enum):
     BLEND = 2
     USE_PRIMARY_IF_3D_FIX_OR_BETTER = 4
 
+def _assert_not_exceeding_timeout_limit(time_now:int,timeout_seconds:int):
+    if time.time() > time_now + timeout_seconds:
+        raise TimeoutError("something went wrong, please try again")
+
 
 def _is_received_message_is_the_relevant_ack(
     parsed_message: dict, parameter_name: str, expected_parameter_value: int
@@ -37,8 +41,7 @@ def _wait_for_ack_that_parameter_has_been_configured_successfuly(
 )->dict:
     now = time.time()
     while True:
-        if time.time() > now + timeout_seconds:
-            raise TimeoutError("something went wrong, please try again")
+        _assert_not_exceeding_timeout_limit(now,timeout_seconds)
         message = _get_next_message_of_type_parameter_value(sock, timeout_seconds)
         parsed_message = message.to_dict()
         if _is_received_message_is_the_relevant_ack(
