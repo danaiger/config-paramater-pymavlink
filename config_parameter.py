@@ -25,7 +25,7 @@ def set_a_parameter_at_on_board_computer(parameter_name:str,parameter_value:int,
 def main():
     connection:mavfile = mavutil.mavlink_connection('udpin:0.0.0.0:14550')
     connection.wait_heartbeat(timeout=TIMEOUT_SECOND)
-    set_a_parameter_at_on_board_computer(PARAMETER_NAME,GPS_AUTO_SWITCH.USE_BEST.value(),connection,TIMEOUT_SECOND)
+    set_a_parameter_at_on_board_computer(PARAMETER_NAME,GPS_AUTO_SWITCH.USE_BEST.value,connection,TIMEOUT_SECOND)
 
 if __name__=='__main__':
     main()
