@@ -11,6 +11,24 @@ class GPS_AUTO_SWITCH(Enum):
     USE_PRIMARY_IF_3D_FIX_OR_BETTER = 4
 
 
+def is_received_message_is_the_relevant_ack(
+    parsed_message: dict, parameter_name: str, expected_parameter_value: int
+) -> bool:
+    return (
+        parsed_message.get("param_id") == parameter_name
+        and parsed_message.get("param_value") == expected_parameter_value
+    )
+
+
+def get_next_message_of_type_parameter_value(sock, timeout_seconds):
+    message = sock.recv_match(
+        type="PARAM_VALUE", blocking=True, timeout=timeout_seconds
+    )
+    if not message:
+        raise TimeoutError("something went wrong, please try again")
+    return message
+
+
 def wait_for_ack_that_parameter_has_been_configured_successfuly(
     parameter_name: str,
     expected_parameter_value: int,
@@ -21,15 +39,10 @@ def wait_for_ack_that_parameter_has_been_configured_successfuly(
     while True:
         if time.time() > now + timeout_seconds:
             raise TimeoutError("something went wrong, please try again")
-        message = sock.recv_match(
-            type="PARAM_VALUE", blocking=True, timeout=timeout_seconds
-        )
-        if not message:
-            raise TimeoutError("something went wrong, please try again")
+        message = get_next_message_of_type_parameter_value(sock, timeout_seconds)
         parsed_message = message.to_dict()
-        if (
-            parsed_message.get("param_id") != parameter_name
-            or parsed_message.get("param_value") != expected_parameter_value
+        if not is_received_message_is_the_relevant_ack(
+            parsed_message, parameter_name, expected_parameter_value
         ):
             continue
         break
@@ -57,13 +70,17 @@ def set_a_parameter_at_on_board_computer(
     )
 
 
+def wait_for_heartbeat(sock: mavfile, timeout_seconds: int):
+    heartbeat = sock.wait_heartbeat(timeout=timeout_seconds)
+    if not heartbeat:
+        raise TimeoutError("cannot get heartbeat, please check the connection")
+
+
 def main():
     TIMEOUT_SECOND = 3
     PARAMETER_NAME = "GPS_AUTO_SWITCH"
     connection: mavfile = mavutil.mavlink_connection("udpin:0.0.0.0:14550")
-    heartbeat = connection.wait_heartbeat(timeout=TIMEOUT_SECOND)
-    if not heartbeat:
-        raise TimeoutError("cannot get heartbeat, please check the connection")
+    wait_for_heartbeat(connection, TIMEOUT_SECOND)
     set_a_parameter_at_on_board_computer(
         PARAMETER_NAME,
         GPS_AUTO_SWITCH.USE_PRIMARY_IF_3D_FIX_OR_BETTER.value,
