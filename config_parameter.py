@@ -19,7 +19,6 @@ def _assert_not_exceeding_timeout_limit(time_now: int, timeout_seconds: int):
 def _is_received_message_is_the_relevant_ack(
     parsed_message: dict, parameter_name: str, expected_parameter_value: int
 ) -> bool:
-    print(parsed_message)
     return (
         parsed_message.get("param_id") == parameter_name
         and parsed_message.get("param_value") == expected_parameter_value

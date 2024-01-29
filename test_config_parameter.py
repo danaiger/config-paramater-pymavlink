@@ -3,6 +3,7 @@ from config_parameter import (
     wait_for_heartbeat,
     _assert_not_exceeding_timeout_limit,
     _is_received_message_is_the_relevant_ack,
+    _get_next_message_of_type_parameter_value,
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
@@ -49,3 +50,7 @@ def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_par
     assert not _is_received_message_is_the_relevant_ack(
         GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_CONFIG", 1
     )
+
+def test_get_next_message_of_type_parameter_value_returns_correct_message():
+    connection.recv_match=Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
+    assert _get_next_message_of_type_parameter_value(connection,3)==GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
