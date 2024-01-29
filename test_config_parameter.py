@@ -15,13 +15,15 @@ from pymavlink import mavutil
 from pymavlink.dialects.v20.ardupilotmega import MAVLink_param_value_message
 import time
 
-GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE = MAVLink_param_value_message(**{
-    "param_id": b"GPS_AUTO_SWITCH",
-    "param_value": 4.0,
-    "param_type": 2,
-    "param_count": 1386,
-    "param_index": 65535,
-})
+@pytest.fixture
+def gps_auto_switch_mavlink_message_example():
+    return MAVLink_param_value_message(
+    param_id= b"GPS_AUTO_SWITCH",
+    param_value= 4.0,
+    param_type= 2,
+    param_count= 1386,
+    param_index= 65535,
+)
 
 
 @pytest.fixture
@@ -44,29 +46,29 @@ def test_assert_not_exceeding_timeout_limit_raises_when_exceeding_limit():
         assert_not_exceeding_timeout_limit(time_now=time.time() - 4, timeout_seconds=3)
 
 
-def test_is_received_message_is_the_relevant_ack_returns_true_for_correct_ack():
+def test_is_received_message_is_the_relevant_ack_returns_true_for_correct_ack(gps_auto_switch_mavlink_message_example):
     assert _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_SWITCH", 4
+        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_SWITCH", 4
     )
 
 
-def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_value_ack():
+def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_value_ack(gps_auto_switch_mavlink_message_example):
     assert not _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_SWITCH", 3
+        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_SWITCH", 3
     )
 
 
-def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_param_ack():
+def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_param_ack(gps_auto_switch_mavlink_message_example):
     assert not _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_CONFIG", 1
+        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_CONFIG", 1
     )
 
 
-def test_get_next_message_of_type_parameter_value_returns_correct_message(connection):
-    connection.recv_match = Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
+def test_get_next_message_of_type_parameter_value_returns_correct_message(connection,gps_auto_switch_mavlink_message_example):
+    connection.recv_match = Mock(return_value=gps_auto_switch_mavlink_message_example)
     assert (
         _get_next_message_of_type_parameter_value(connection, 3)
-        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
+        == gps_auto_switch_mavlink_message_example
     )
 
 
@@ -79,12 +81,12 @@ def test_get_next_message_of_type_parameter_value_raises_when_no_message_is_rece
 
 
 def test_wait_for_ack_that_parameter_has_been_configured_successfuly_returns_correct_parsed_message(
-    connection,
+    connection,gps_auto_switch_mavlink_message_example
 ):
-    connection.recv_match = Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
+    connection.recv_match = Mock(return_value=gps_auto_switch_mavlink_message_example)
     assert (
         wait_for_ack_that_parameter_has_been_configured_successfuly(
             "GPS_AUTO_SWITCH", 4, connection, 3
         )
-        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict()
+        == gps_auto_switch_mavlink_message_example.to_dict()
     )
