@@ -23,13 +23,13 @@ def connection():
     return mavutil.mavlink_connection("udpin:0.0.0.0:14550")
 
 
-def test_heartbeat_raises_timeout_error(connection):
+def test_wait_for_heartbeat_raises_timeout_error(connection):
     connection.wait_heartbeat = Mock(return_value=None)
     with pytest.raises(TimeoutError):
         wait_for_heartbeat(connection, timeout_seconds=3)
 
 
-def test_assert_exceeding_timeout_limits_raises():
+def test_assert_not_exceeding_timeout_limit_raises_when_exceeding_limit():
     with pytest.raises(TimeoutError):
         _assert_not_exceeding_timeout_limit(time_now=time.time() - 4, timeout_seconds=3)
 
