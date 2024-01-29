@@ -1,8 +1,7 @@
 from pymavlink import mavutil
 from pymavlink.mavutil import mavfile
 from enum import Enum
-from utils import wait_for_ack_that_parameter_has_been_configured_successfuly
-
+from mavlink_message_filter import wait_for_ack_that_parameter_has_been_configured_successfuly
 
 class GPS_Auto_Switch(Enum):
     USE_PRIMARY = 0

@@ -3,7 +3,9 @@ from config_parameter import (
     wait_for_heartbeat,
 )
 from utils import (
-    _assert_not_exceeding_timeout_limit,
+    assert_not_exceeding_timeout_limit,
+)
+from mavlink_message_filter import (
     _is_received_message_is_the_relevant_ack,
     _get_next_message_of_type_parameter_value,
     wait_for_ack_that_parameter_has_been_configured_successfuly,
@@ -39,7 +41,7 @@ def test_wait_for_heartbeat_not_raises(connection):
 
 def test_assert_not_exceeding_timeout_limit_raises_when_exceeding_limit():
     with pytest.raises(TimeoutError):
-        _assert_not_exceeding_timeout_limit(time_now=time.time() - 4, timeout_seconds=3)
+        assert_not_exceeding_timeout_limit(time_now=time.time() - 4, timeout_seconds=3)
 
 
 def test_is_received_message_is_the_relevant_ack_returns_true_for_correct_ack():
