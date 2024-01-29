@@ -8,17 +8,18 @@ from config_parameter import (
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
+from pymavlink.dialects.v20.ardupilotmega import MAVLink_param_value_message
 import time
 
-GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE = {
-    "mavpackettype": "PARAM_VALUE",
-    "param_id": "GPS_AUTO_SWITCH",
+GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE = MAVLink_param_value_message(**{
+    "param_id": b"GPS_AUTO_SWITCH",
     "param_value": 4.0,
     "param_type": 2,
     "param_count": 1386,
     "param_index": 65535,
-}
+})
 
+print(GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
 
 @pytest.fixture
 def connection():
@@ -38,19 +39,19 @@ def test_assert_not_exceeding_timeout_limit_raises_when_exceeding_limit():
 
 def test_is_received_message_is_the_relevant_ack_returns_true_for_correct_ack():
     assert _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_SWITCH", 4
+        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_SWITCH", 4
     )
 
 
 def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_value_ack():
     assert not _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_SWITCH", 3
+        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_SWITCH", 3
     )
 
 
 def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_param_ack():
     assert not _is_received_message_is_the_relevant_ack(
-        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_CONFIG", 1
+        GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict(), "GPS_AUTO_CONFIG", 1
     )
 
 
@@ -73,9 +74,10 @@ def test_get_next_message_of_type_parameter_value_raises_when_no_message_is_rece
 def test_wait_for_ack_that_parameter_has_been_configured_successfuly_returns_correct_parsed_message(
     connection,
 ):
- assert (
+    connection.recv_match = Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
+    assert (
         _wait_for_ack_that_parameter_has_been_configured_successfuly(
             "GPS_AUTO_SWITCH", 4, connection, 3
         )
-        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
+        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict()
     )
