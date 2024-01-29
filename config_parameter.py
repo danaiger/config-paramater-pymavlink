@@ -1,14 +1,6 @@
 from pymavlink import mavutil
 from pymavlink.mavutil import mavfile
-from enum import Enum
 from mavlink_message_filter import wait_for_ack_that_parameter_has_been_configured_successfuly
-
-class GPS_Auto_Switch(Enum):
-    USE_PRIMARY = 0
-    USE_BEST = 1
-    BLEND = 2
-    USE_PRIMARY_IF_3D_FIX_OR_BETTER = 4
-
 
 
 def set_a_parameter_at_on_board_computer(
