@@ -1,10 +1,12 @@
 import pytest
 from config_parameter import (
     wait_for_heartbeat,
+)
+from utils import (
     _assert_not_exceeding_timeout_limit,
     _is_received_message_is_the_relevant_ack,
     _get_next_message_of_type_parameter_value,
-    _wait_for_ack_that_parameter_has_been_configured_successfuly,
+    wait_for_ack_that_parameter_has_been_configured_successfuly,
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
@@ -79,7 +81,7 @@ def test_wait_for_ack_that_parameter_has_been_configured_successfuly_returns_cor
 ):
     connection.recv_match = Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
     assert (
-        _wait_for_ack_that_parameter_has_been_configured_successfuly(
+        wait_for_ack_that_parameter_has_been_configured_successfuly(
             "GPS_AUTO_SWITCH", 4, connection, 3
         )
         == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE.to_dict()
