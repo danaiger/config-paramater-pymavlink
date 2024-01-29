@@ -44,7 +44,6 @@ def _wait_for_ack_that_parameter_has_been_configured_successfuly(
     while True:
         _assert_not_exceeding_timeout_limit(now, timeout_seconds)
         message = _get_next_message_of_type_parameter_value(sock, timeout_seconds)
-        print(type(message))
         parsed_message = message.to_dict()
         if _is_received_message_is_the_relevant_ack(
             parsed_message, parameter_name, expected_parameter_value

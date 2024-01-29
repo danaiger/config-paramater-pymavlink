@@ -19,7 +19,6 @@ GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE = MAVLink_param_value_message(**{
     "param_index": 65535,
 })
 
-print(GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
 
 @pytest.fixture
 def connection():
