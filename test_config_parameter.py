@@ -30,6 +30,10 @@ def test_wait_for_heartbeat_raises_timeout_error(connection):
     with pytest.raises(TimeoutError):
         wait_for_heartbeat(connection, timeout_seconds=3)
 
+def test_wait_for_heartbeat_not_raises(connection):
+    connection.wait_heartbeat = Mock(return_value="heartbeat string since I dont know how to generate heatbeat")
+    wait_for_heartbeat(connection, timeout_seconds=3)
+
 
 def test_assert_not_exceeding_timeout_limit_raises_when_exceeding_limit():
     with pytest.raises(TimeoutError):
