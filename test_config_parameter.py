@@ -54,3 +54,8 @@ def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_par
 def test_get_next_message_of_type_parameter_value_returns_correct_message():
     connection.recv_match=Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
     assert _get_next_message_of_type_parameter_value(connection,3)==GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
+
+def test_get_next_message_of_type_parameter_value_raises_when_no_message_is_received():
+    connection.recv_match=Mock(return_value=None)
+    with pytest.raises(TimeoutError):
+        _get_next_message_of_type_parameter_value(connection,3)
