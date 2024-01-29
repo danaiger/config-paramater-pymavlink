@@ -4,6 +4,7 @@ from config_parameter import (
     _assert_not_exceeding_timeout_limit,
     _is_received_message_is_the_relevant_ack,
     _get_next_message_of_type_parameter_value,
+    _wait_for_ack_that_parameter_has_been_configured_successfuly,
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
@@ -46,16 +47,35 @@ def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_val
         GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_SWITCH", 3
     )
 
+
 def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_param_ack():
     assert not _is_received_message_is_the_relevant_ack(
         GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE, "GPS_AUTO_CONFIG", 1
     )
 
-def test_get_next_message_of_type_parameter_value_returns_correct_message():
-    connection.recv_match=Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
-    assert _get_next_message_of_type_parameter_value(connection,3)==GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
 
-def test_get_next_message_of_type_parameter_value_raises_when_no_message_is_received():
-    connection.recv_match=Mock(return_value=None)
+def test_get_next_message_of_type_parameter_value_returns_correct_message(connection):
+    connection.recv_match = Mock(return_value=GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE)
+    assert (
+        _get_next_message_of_type_parameter_value(connection, 3)
+        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
+    )
+
+
+def test_get_next_message_of_type_parameter_value_raises_when_no_message_is_received(
+    connection,
+):
+    connection.recv_match = Mock(return_value=None)
     with pytest.raises(TimeoutError):
-        _get_next_message_of_type_parameter_value(connection,3)
+        _get_next_message_of_type_parameter_value(connection, 3)
+
+
+def test_wait_for_ack_that_parameter_has_been_configured_successfuly_returns_correct_parsed_message(
+    connection,
+):
+ assert (
+        _wait_for_ack_that_parameter_has_been_configured_successfuly(
+            "GPS_AUTO_SWITCH", 4, connection, 3
+        )
+        == GPS_AUTO_SWITCH_EXPECTED_MESSAGE_EXAMPLE
+    )
