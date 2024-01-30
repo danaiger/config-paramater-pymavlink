@@ -17,6 +17,17 @@ import time
 
 
 @pytest.fixture
+def loit_speed_mavlink_message_example():
+    return MAVLink_param_value_message(
+        param_id=b"LOIT_SPEED",
+        param_value=300.0,
+        param_type=9,
+        param_count=1386,
+        param_index=65535,
+    )
+
+
+@pytest.fixture
 def gps_auto_switch_mavlink_message_example():
     return MAVLink_param_value_message(
         param_id=b"GPS_AUTO_SWITCH",
@@ -96,6 +107,28 @@ def test_wait_for_ack_that_parameter_has_been_configured_successfuly_returns_cor
     connection, gps_auto_switch_mavlink_message_example
 ):
     connection.recv_match = Mock(return_value=gps_auto_switch_mavlink_message_example)
+    assert (
+        wait_for_ack_that_parameter_has_been_configured_successfuly(
+            parameter_name="GPS_AUTO_SWITCH",
+            expected_parameter_value=4,
+            sock=connection,
+            timeout_seconds=3,
+        )
+        == gps_auto_switch_mavlink_message_example.to_dict()
+    )
+
+
+def test_wait_for_ack_that_parameter_has_been_configured_successfuly_after_receiving_the_wrong_message_at_first(
+    connection,
+    gps_auto_switch_mavlink_message_example,
+    loit_speed_mavlink_message_example,
+):
+    connection.recv_match = Mock(
+        side_effect=(
+            loit_speed_mavlink_message_example,
+            gps_auto_switch_mavlink_message_example,
+        )
+    )
     assert (
         wait_for_ack_that_parameter_has_been_configured_successfuly(
             parameter_name="GPS_AUTO_SWITCH",
