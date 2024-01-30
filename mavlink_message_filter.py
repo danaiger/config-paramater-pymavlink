@@ -1,7 +1,7 @@
 import time
 from pymavlink.mavutil import mavfile
 from utils import assert_not_exceeding_timeout_limit
-from pymavlink.dialects.v20.ardupilotmega import MAVLink_param_value_message
+from pymavlink.dialects.v10.ardupilotmega import MAVLink_param_value_message
 
 
 def _is_received_message_is_the_relevant_ack(

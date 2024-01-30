@@ -12,7 +12,7 @@ from mavlink_message_filter import (
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
-from pymavlink.dialects.v20.ardupilotmega import MAVLink_param_value_message
+from pymavlink.dialects.v10.ardupilotmega import MAVLink_param_value_message
 import time
 
 
