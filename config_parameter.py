@@ -3,6 +3,7 @@ from pymavlink.mavutil import mavfile
 from mavlink_message_filter import wait_for_ack_that_parameter_has_been_configured_successfuly
 from parameter_models import GPS_Auto_Switch
 
+TIMEOUT_SECOND = 3
 
 def set_a_parameter_at_on_board_computer(
     parameter_name: str, parameter_value: int, sock: mavfile, timeout_seconds: int
@@ -33,7 +34,6 @@ def wait_for_heartbeat(sock: mavfile, timeout_seconds: int):
 
 
 def main():
-    TIMEOUT_SECOND = 3
     PARAMETER_NAME = "GPS_AUTO_SWITCH"
     connection: mavfile = mavutil.mavlink_connection("udpin:0.0.0.0:14550")
     wait_for_heartbeat(connection, TIMEOUT_SECOND)
