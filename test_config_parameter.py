@@ -54,7 +54,7 @@ def test_is_received_message_is_the_relevant_ack_returns_true_for_correct_ack(
     gps_auto_switch_mavlink_message_example,
 ):
     assert _is_received_message_is_the_relevant_ack(
-        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_SWITCH", 4
+        gps_auto_switch_mavlink_message_example, "GPS_AUTO_SWITCH", 4
     )
 
 
@@ -62,7 +62,7 @@ def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_val
     gps_auto_switch_mavlink_message_example,
 ):
     assert not _is_received_message_is_the_relevant_ack(
-        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_SWITCH", 3
+        gps_auto_switch_mavlink_message_example, "GPS_AUTO_SWITCH", 3
     )
 
 
@@ -70,7 +70,7 @@ def test_is_received_message_is_the_relevant_ack_returns_false_for_incorrect_par
     gps_auto_switch_mavlink_message_example,
 ):
     assert not _is_received_message_is_the_relevant_ack(
-        gps_auto_switch_mavlink_message_example.to_dict(), "GPS_AUTO_CONFIG", 1
+        gps_auto_switch_mavlink_message_example, "GPS_AUTO_CONFIG", 1
     )
 
 

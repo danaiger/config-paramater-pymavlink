@@ -1,17 +1,18 @@
 import time
 from pymavlink.mavutil import mavfile
 from utils import assert_not_exceeding_timeout_limit
+from pymavlink.dialects.v20.ardupilotmega import MAVLink_param_value_message
 
 def _is_received_message_is_the_relevant_ack(
-    parsed_message: dict, parameter_name: str, expected_parameter_value: int
+    message: MAVLink_param_value_message, parameter_name: str, expected_parameter_value: int
 ) -> bool:
     return (
-        parsed_message.get("param_id") == parameter_name
-        and parsed_message.get("param_value") == expected_parameter_value
+        message.param_id == parameter_name
+        and message.param_value == expected_parameter_value
     )
 
 
-def _get_next_message_of_type_parameter_value(sock, timeout_seconds):
+def _get_next_message_of_type_parameter_value(sock, timeout_seconds)-> MAVLink_param_value_message:
     message = sock.recv_match(
         type="PARAM_VALUE", blocking=True, timeout=timeout_seconds
     )
@@ -30,9 +31,8 @@ def wait_for_ack_that_parameter_has_been_configured_successfuly(
     while True:
         assert_not_exceeding_timeout_limit(now, timeout_seconds)
         message = _get_next_message_of_type_parameter_value(sock, timeout_seconds)
-        parsed_message = message.to_dict()
         if _is_received_message_is_the_relevant_ack(
-            parsed_message, parameter_name, expected_parameter_value
+            message, parameter_name, expected_parameter_value
         ):
-            return parsed_message
+            return message.to_dict()
 
