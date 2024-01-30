@@ -12,7 +12,7 @@ def set_a_parameter_at_on_board_computer(
         sock.target_component,
         bytes(parameter_name, "utf-8"),
         parameter_value,
-        mavutil.mavlink.MAV_PARAM_TYPE_REAL32,
+        mavutil.mavlink.MAV_PARAM_TYPE_INT8,
     )
     print(
         f"request sent to configure param name: {parameter_name} with value: {parameter_value}. waiting for acknowledgement"
