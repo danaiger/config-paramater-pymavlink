@@ -12,8 +12,23 @@ from mavlink_message_filter import (
 )
 from unittest.mock import Mock
 from pymavlink import mavutil
-from pymavlink.dialects.v10.ardupilotmega import MAVLink_param_value_message
+from pymavlink.dialects.v10.ardupilotmega import (
+    MAVLink_param_value_message,
+    MAVLink_heartbeat_message,
+)
 import time
+
+
+@pytest.fixture
+def heartbeat_message_example():
+    return MAVLink_heartbeat_message(
+        type=2,
+        autopilot=3,
+        base_mode=81,
+        custom_mode=0,
+        system_status=3,
+        mavlink_version=3,
+    )
 
 
 @pytest.fixture
@@ -49,9 +64,9 @@ def test_wait_for_heartbeat_raises_timeout_error(connection):
         wait_for_heartbeat(connection, timeout_seconds=3)
 
 
-def test_wait_for_heartbeat_not_raises(connection):
+def test_wait_for_heartbeat_not_raises(connection,heart_beat_message_example):
     connection.wait_heartbeat = Mock(
-        return_value="heartbeat string since I dont know how to generate heatbeat"
+        return_value=heart_beat_message_example
     )
     wait_for_heartbeat(connection, timeout_seconds=3)
 
