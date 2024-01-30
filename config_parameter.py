@@ -1,9 +1,12 @@
 from pymavlink import mavutil
 from pymavlink.mavutil import mavfile
-from mavlink_message_filter import wait_for_ack_that_parameter_has_been_configured_successfuly
+from mavlink_message_filter import (
+    wait_for_ack_that_parameter_has_been_configured_successfuly,
+)
 from parameter_models import GPS_Auto_Switch
 
 TIMEOUT_SECOND = 3
+
 
 def set_a_parameter_at_on_board_computer(
     parameter_name: str, parameter_value: int, sock: mavfile, timeout_seconds: int

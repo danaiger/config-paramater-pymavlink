@@ -43,4 +43,3 @@ def gps_auto_switch_mavlink_message_example():
 @pytest.fixture
 def connection():
     return mavutil.mavlink_connection("udpin:0.0.0.0:14550")
-

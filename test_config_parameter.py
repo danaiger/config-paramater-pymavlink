@@ -109,14 +109,12 @@ def test_wait_for_ack_that_parameter_has_been_configured_successfuly_after_recei
         == gps_auto_switch_mavlink_message_example.to_dict()
     )
 
-def test_wait_for_ack_that_parameter_has_been_configured_successfuly_raises_if_time_is_too_big(
-    connection
-):
 
-    now=time.time()
-    time.time = Mock(
-       side_effect=(now,now+TIMEOUT_SECOND+1)
-                )
+def test_wait_for_ack_that_parameter_has_been_configured_successfuly_raises_if_time_is_too_big(
+    connection,
+):
+    now = time.time()
+    time.time = Mock(side_effect=(now, now + TIMEOUT_SECOND + 1))
     with pytest.raises(TimeoutError):
         wait_for_ack_that_parameter_has_been_configured_successfuly(
             parameter_name="GPS_AUTO_SWITCH",
@@ -124,4 +122,3 @@ def test_wait_for_ack_that_parameter_has_been_configured_successfuly_raises_if_t
             sock=connection,
             timeout_seconds=3,
         )
-        
